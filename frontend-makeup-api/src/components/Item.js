@@ -3,11 +3,16 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Item(props) {
   const [serverLink, setserverLink] = useState(process.env.REACT_APP_SERVER);
+  const { isAuthenticated } = useAuth0();
+  const { user } = useAuth0();
 
   const addToFav = async (makeup) => {
+    makeup["userName"] = user.email || user.nickname;
+
     await axios.post(`${serverLink}/product`, makeup);
   };
 
@@ -20,14 +25,16 @@ function Item(props) {
         <Card.Text>{props.item.prodPrice}</Card.Text>
         <Card.Text>{props.item.prodDisruption}</Card.Text>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            addToFav(props.item);
-          }}
-        >
-          ADD FAV
-        </Button>
+        {isAuthenticated && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              addToFav(props.item);
+            }}
+          >
+            ADD FAV
+          </Button>
+        )}
       </Card.Body>
     </Card>
   );

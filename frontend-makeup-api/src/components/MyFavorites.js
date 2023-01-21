@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import FavItem from "./FavItem";
-import UpdateMakeupModal from "./UpdateDigimonModal";
+import UpdateMakeupModal from "./UpdateMakeupModal";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function MyFavorites() {
   const [results, setResults] = useState([]);
@@ -11,11 +12,16 @@ function MyFavorites() {
   const [itemInfo, setItemInfo] = useState({});
   const [index, setIndex] = useState(0);
   const [showUpdateModalStatus, setShowUpdateModalStatus] = useState(false);
+  const { user } = useAuth0();
 
   useEffect(() => {
     const getFavMakeup = async () => {
-      let resultMakeup = await axios.get(`${serverLink}/product`);
-      // console.log("getFavDigimon", resultDigimon);
+      let username = user.email || user.nickname;
+      console.log(username);
+      let resultMakeup = await axios.get(
+        `${serverLink}/product?username=${username}`
+      );
+      console.log("getFavMakeup", resultMakeup.data);
       setResults(resultMakeup.data);
       setShowItems(true);
     };
